@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartNotes</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">N</div>
+            <div>
+                <h2>SmartNotes</h2>
+                <span>Your thoughts, organized.</span>
+            </div>
+        </div>
+
+        <button class="new-note-btn" onclick="openNoteModal()">
+            <span>+</span>
+            New Note
+        </button>
+
+        <nav class="navigation">
+
+            <button class="nav-item active" onclick="changeSection('all', this)">
+                <span>📝</span>
+                All Notes
+                <b id="allCount">0</b>
+            </button>
+
+            <button class="nav-item" onclick="changeSection('pinned', this)">
+                <span>📌</span>
+                Pinned
+                <b id="pinnedCount">0</b>
+            </button>
+
+            <button class="nav-item" onclick="changeSection('favorites', this)">
+                <span>⭐</span>
+                Favorites
+                <b id="favoriteCount">0</b>
+            </button>
+
+            <button class="nav-item" onclick="changeSection('trash', this)">
+                <span>🗑️</span>
+                Trash
+                <b id="trashCount">0</b>
+            </button>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <button class="nav-item" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span>
+                <span id="themeText">Dark Mode</span>
+            </button>
+
+            <div class="profile">
+                <div class="profile-avatar">JB</div>
+                <div>
+                    <strong>My Notes</strong>
+                    <small>Personal Workspace</small>
+                </div>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <header class="topbar">
+
+            <div>
+                <p class="welcome">WELCOME BACK 👋</p>
+                <h1 id="pageTitle">All Notes</h1>
+            </div>
+
+            <div class="top-actions">
+
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search notes..."
+                        oninput="renderNotes()"
+                    >
+                    <kbd>Ctrl K</kbd>
+                </div>
+
+                <button class="icon-btn" onclick="openNoteModal()" title="New Note">
+                    +
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- CATEGORY FILTERS -->
+        <section class="filters">
+
+            <button class="filter active" onclick="setCategory('All', this)">
+                All
+            </button>
+
+            <button class="filter" onclick="setCategory('Personal', this)">
+                Personal
+            </button>
+
+            <button class="filter" onclick="setCategory('Work', this)">
+                Work
+            </button>
+
+            <button class="filter" onclick="setCategory('Study', this)">
+                Study
+            </button>
+
+            <button class="filter" onclick="setCategory('Ideas', this)">
+                Ideas
+            </button>
+
+        </section>
+
+
+        <!-- NOTES -->
+        <section class="notes-section">
+
+            <div class="section-heading">
+                <div>
+                    <h2 id="sectionTitle">Recent Notes</h2>
+                    <p id="noteSubtitle">Your latest thoughts and ideas</p>
+                </div>
+
+                <button class="sort-btn" onclick="toggleSort()">
+                    ↕ Sort
+                </button>
+            </div>
+
+            <div id="notesGrid" class="notes-grid"></div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- NOTE MODAL -->
+<div class="modal-overlay" id="noteModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <div>
+                <h2 id="modalTitle">Create New Note</h2>
+                <p>Capture your thoughts.</p>
+            </div>
+
+            <button class="close-btn" onclick="closeNoteModal()">
+                ×
+            </button>
+        </div>
+
+        <form id="noteForm" onsubmit="saveNote(event)">
+
+            <input type="hidden" id="editId">
+
+            <label>Title</label>
+
+            <input
+                type="text"
+                id="noteTitle"
+                placeholder="Note title..."
+                required
+            >
+
+            <label>Content</label>
+
+            <textarea
+                id="noteContent"
+                placeholder="Write your note here..."
+                required
+            ></textarea>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Category</label>
+
+                    <select id="noteCategory">
+                        <option value="Personal">Personal</option>
+                        <option value="Work">Work</option>
+                        <option value="Study">Study</option>
+                        <option value="Ideas">Ideas</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Color</label>
+
+                    <div class="color-picker">
+
+                        <button type="button" class="color-option selected" data-color="yellow" onclick="selectColor(this)"></button>
+
+                        <button type="button" class="color-option pink" data-color="pink" onclick="selectColor(this)"></button>
+
+                        <button type="button" class="color-option blue" data-color="blue" onclick="selectColor(this)"></button>
+
+                        <button type="button" class="color-option green" data-color="green" onclick="selectColor(this)"></button>
+
+                        <button type="button" class="color-option purple" data-color="purple" onclick="selectColor(this)"></button>
+
+                    </div>
+
+                    <input type="hidden" id="noteColor" value="yellow">
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeNoteModal()"
+                >
+                    Cancel
+                </button>
+
+                <button type="submit" class="save-btn">
+                    Save Note
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- VIEW NOTE MODAL -->
+<div class="modal-overlay" id="viewModal">
+
+    <div class="modal view-modal">
+
+        <div class="modal-header">
+
+            <div>
+                <span id="viewCategory" class="category-badge"></span>
+                <h2 id="viewTitle"></h2>
+            </div>
+
+            <button class="close-btn" onclick="closeViewModal()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="view-content">
+            <p id="viewContent"></p>
+        </div>
+
+        <div class="view-footer">
+
+            <span id="viewDate"></span>
+
+            <div>
+                <button class="secondary-btn" onclick="editCurrentNote()">
+                    ✏️ Edit
+                </button>
+
+                <button class="delete-btn" onclick="deleteCurrentNote()">
+                    🗑️ Delete
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+<div id="toast" class="toast">
+    Note saved successfully!
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
